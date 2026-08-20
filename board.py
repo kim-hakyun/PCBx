@@ -174,13 +174,17 @@ class Pad:
 
     name: str = ""
 
+    layer: int = 0
+
     x: int = 0
 
     y: int = 0
 
+    size: int = 0
+
     rotation: float = 0.0
 
-    shape: str = ""
+    shape: str = "R"
 
 
 @dataclass
@@ -189,3 +193,7 @@ class Package:
     name: str = ""
 
     pads: list = field(default_factory=list)
+
+    outlines: list = field(default_factory=list)
+
+    texts: list = field(default_factory=list)

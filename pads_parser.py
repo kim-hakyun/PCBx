@@ -1,7 +1,7 @@
 
 import re
 from board import (
-    Board, Text, Line, Point, Piece, Via, ViaDef, ViaPad, Part,Signal, Segment, Package,
+    Board, Text, Line, Point, Piece, Via, ViaDef, ViaPad, Part,Signal, Segment, Package, Pad,
 )
 class PadsParser:
     SECTION_NAMES={"PCB","TEXT","LINES","VIA","PART","PARTTYPE","PARTDECAL","ROUTE","SIGNAL","POUR","TESTPOINT","MISC","REUSE","END"}
@@ -640,11 +640,13 @@ class PadsParser:
 
         data = board.sections["PARTDECAL"]
 
+        current = None
+
         for line in data:
 
             line = line.strip()
 
-            if line == "":
+            if not line:
                 continue
 
             if line.startswith("*"):
@@ -655,11 +657,47 @@ class PadsParser:
             #
             # Footprint Header
             #
-            if len(w) >= 8:
+            if len(w) >= 8 and w[1] in ("M", "I"):
 
-                if w[1] in ("M", "I"):
+                current = Package()
 
-                    board.packages.append(w[0])
+                current.name = w[0]
+
+                current.pads = []
+
+                board.packages.append(current)
+
+                continue
+
+            #
+            # PAD
+            #
+            if current is not None:
+
+                if len(w) >= 3 and w[0] == "PAD":
+
+                    continue
+
+                #
+                # PAD DATA
+                #
+                if len(w) >= 3:
+
+                    try:
+
+                        pad = Pad()
+
+                        pad.layer = int(w[0])
+
+                        pad.size = int(w[1])
+
+                        pad.shape = w[2]
+
+                        current.pads.append(pad)
+
+                    except:
+
+                        pass
 
         print()
 
@@ -669,4 +707,4 @@ class PadsParser:
 
         for p in board.packages[:10]:
 
-            print(p)
+            print(p.name, " Pads :", len(p.pads))

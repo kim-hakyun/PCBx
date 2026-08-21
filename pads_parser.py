@@ -642,9 +642,13 @@ class PadsParser:
 
         current = None
 
-        for line in data:
+        state = ""
 
-            line = line.strip()
+        remain = 0
+
+        for raw in data:
+
+            line = raw.strip()
 
             if not line:
                 continue
@@ -655,7 +659,7 @@ class PadsParser:
             w = line.split()
 
             #
-            # Footprint Header
+            # New Package
             #
             if len(w) >= 8 and w[1] in ("M", "I"):
 
@@ -663,48 +667,71 @@ class PadsParser:
 
                 current.name = w[0]
 
-                current.pads = []
-
                 board.packages.append(current)
+
+                state = ""
+
+                remain = 0
+
+                continue
+
+            if current is None:
+                continue
+
+            #
+            # PAD HEADER
+            #
+            if w[0] == "PAD":
+
+                state = "PAD"
+
+                remain = int(w[2])
 
                 continue
 
             #
-            # PAD
+            # PAD DATA
             #
-            if current is not None:
+            if state == "PAD":
 
-                if len(w) >= 3 and w[0] == "PAD":
+                if remain == 0:
+
+                    state = ""
 
                     continue
 
-                #
-                # PAD DATA
-                #
-                if len(w) >= 3:
+                pad = Pad()
 
-                    try:
+                try:
 
-                        pad = Pad()
+                    pad.layer = int(w[0])
 
-                        pad.layer = int(w[0])
+                    pad.size = int(w[1])
 
-                        pad.size = int(w[1])
+                    pad.shape = w[2]
 
-                        pad.shape = w[2]
+                    current.pads.append(pad)
 
-                        current.pads.append(pad)
+                except Exception:
+                    pass
 
-                    except:
+                remain -= 1
 
-                        pass
+                continue
 
         print()
 
         print("PACKAGE COUNT :", len(board.packages))
 
-        print()
+        for p in board.packages:
 
-        for p in board.packages[:10]:
+            print("-" * 40)
+            print(p.name)
+            print("Pads :", len(p.pads))
 
-            print(p.name, " Pads :", len(p.pads))
+            for pad in p.pads:
+                print(
+                    f"  Layer={pad.layer:3d} "
+                    f"Size={pad.size:8d} "
+                    f"Shape={pad.shape}"
+                )

@@ -1,7 +1,7 @@
 
 import re
 from board import (
-    Board, Text, Line, Point, Piece, Via, ViaDef, ViaPad, Part,Signal, Segment, Package, Pad,
+    Board, Text, Line, Point, Piece, Via, ViaDef, ViaPad, Part,Signal, Segment, Package, Pad, Outline,
 )
 class PadsParser:
     SECTION_NAMES={"PCB","TEXT","LINES","VIA","PART","PARTTYPE","PARTDECAL","ROUTE","SIGNAL","POUR","TESTPOINT","MISC","REUSE","END"}
@@ -667,6 +667,8 @@ class PadsParser:
 
                 current.name = w[0]
 
+                current.outlines = []
+
                 board.packages.append(current)
 
                 state = ""
@@ -686,6 +688,27 @@ class PadsParser:
                 state = "PAD"
 
                 remain = int(w[2])
+
+                continue
+            #
+            # OPEN / CLOSE HEADER
+            # 
+ 
+            if w[0] in ("OPEN", "CLOSED"):
+
+                outline = Outline()
+
+                outline.kind = w[0]
+
+                outline.width = int(w[2])
+
+                outline.layer = int(w[4])
+
+                outline_count = int(w[1])
+
+                outline.points = []
+
+                state = "OUTLINE"
 
                 continue
 
@@ -719,6 +742,48 @@ class PadsParser:
 
                 continue
 
+            #
+            # OUTLINE DATA
+            #
+            if state == "OUTLINE":
+
+                try:
+
+                    x = int(w[0])
+
+                    y = int(w[1])
+
+                    outline.points.append(Point(x, y))
+
+                except:
+
+                    pass
+
+                outline_count -= 1
+
+                if outline_count <= 0:
+
+                    current.outlines.append(outline)
+
+                    state = ""
+
+                continue
+
+            #
+            # CIRCLE
+            #
+            if w[0] == "CIRCLE":
+
+                outline = Outline()
+
+                outline.kind = "CIRCLE"
+
+                current.outlines.append(outline)
+
+                continue
+
+
+
         print()
 
         print("PACKAGE COUNT :", len(board.packages))
@@ -726,12 +791,9 @@ class PadsParser:
         for p in board.packages:
 
             print("-" * 40)
-            print(p.name)
-            print("Pads :", len(p.pads))
 
-            for pad in p.pads:
-                print(
-                    f"  Layer={pad.layer:3d} "
-                    f"Size={pad.size:8d} "
-                    f"Shape={pad.shape}"
-                )
+            print(p.name)
+
+            print("Pads     :", len(p.pads))
+
+            print("Outline  :", len(p.outlines))

@@ -204,17 +204,6 @@ class Package:
 
 
 @dataclass
-class Outline:
-
-    kind: str = ""          # OPEN / CLOSED / CIRCLE
-
-    width: int = 0
-
-    layer: int = 0
-
-    points: list = field(default_factory=list)
-
-@dataclass
 class Pin:
 
     number: int = 0
@@ -222,3 +211,14 @@ class Pin:
     x: int = 0
 
     y: int = 0
+
+@dataclass
+class Outline:
+
+    kind: str = ""          # OPEN CLOSED CIRCLE
+
+    width: int = 0
+
+    layer: int = 0
+
+    points: list = field(default_factory=list)

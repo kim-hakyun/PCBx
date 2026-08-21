@@ -1,0 +1,15 @@
+(---------------------------------------------------------------------)
+(                                                                     )
+(    IPC2581 Import                                                   )
+(                                                                     )
+(    Software Version : 16.6P004                                      )
+(    Date/Time        : Thu Aug 20 11:16:15 2026                      )
+(                                                                     )
+(---------------------------------------------------------------------)
+
+
+Reading IPC2581 file... done.
+IPC2581 file: C:/0_Ddrive/01/01_project/PCBX_1/output/output.xml
+Input file: C:/0_Ddrive/01/01_project/PCBX_1/BRD_out_By_manual/pcbx_1.brd
+Output file: C:/0_Ddrive/01/01_project/PCBX_1/BRD_out_By_manual/pcbx_1.brd
+ipc2581 import complete.

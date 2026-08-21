@@ -186,6 +186,7 @@ class Pad:
 
     shape: str = "R"
 
+    pin_number: int = 0
 
 @dataclass
 class Package:
@@ -197,3 +198,27 @@ class Package:
     outlines: list = field(default_factory=list)
 
     texts: list = field(default_factory=list)
+
+    pins: list = field(default_factory=list)
+
+
+
+@dataclass
+class Outline:
+
+    kind: str = ""          # OPEN / CLOSED / CIRCLE
+
+    width: int = 0
+
+    layer: int = 0
+
+    points: list = field(default_factory=list)
+
+@dataclass
+class Pin:
+
+    number: int = 0
+
+    x: int = 0
+
+    y: int = 0
